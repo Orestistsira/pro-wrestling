@@ -1,3 +1,4 @@
+import os
 import random
 from datetime import datetime
 
@@ -10,7 +11,7 @@ app = Flask(__name__, static_url_path='/static')
 db_config = {
     'host': 'localhost',
     'user': 'root',
-    'password': '85|uvdZOq9{M',
+    'password': os.environ.get('DB_PASSWORD'),
     'database': 'prowresdb',
 }
 
