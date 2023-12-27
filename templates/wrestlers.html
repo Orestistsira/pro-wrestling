@@ -21,14 +21,14 @@
 
         <h1>{{ title }}</h1>
         <ul>
-            {% for match in matches %}
+            {% for wrestler in wrestlers %}
                  <li>
-                    <a href="{{ url_for('match_detail', event_id=match.event_id, match_id=match.match_id) }}">
+                    <a href="{{ url_for('wrestler_detail', wrestler_id=wrestler.wrestler_id) }}">
                         <div class="info-item">
-                            <span>{{ match.event_name }}:  {{ match.type }}</span>
-                            {% if match.rating %}
-                                <span class="rating {% if match.rating >= 7 %}rating-green{% elif match.rating >= 4 %}rating-orange{% else %}rating-red{% endif %}">
-                                    Rating: {{ '{:.2f}'.format(match.rating) }}
+                            <span>{{ wrestler.wrestler_name }}</span>
+                            {% if wrestler.rating %}
+                                <span class="rating {% if wrestler.rating >= 7 %}rating-green{% elif wrestler.rating >= 4 %}rating-orange{% else %}rating-red{% endif %}">
+                                    Rating: {{ '{:.2f}'.format(wrestler.rating) }}
                                 </span>
                             {% endif %}
                         </div>

@@ -13,13 +13,16 @@
                 <ul>
                     <li><a href="{{ url_for('index') }}">Events</a></li>
                     <li><a href="{{ url_for('matches') }}">Matches</a></li>
+                    <li><a href="{{ url_for('wrestlers') }}">Wrestlers</a></li>
                 </ul>
             </nav>
         </header>
 
         <h1>{{ title }}</h1>
         {% if event %}
-            <div class="big-rating {% if event.rating >= 7 %}rating-green{% elif event.rating >= 4 %}rating-orange{% else %}rating-red{% endif %}">Rating: {{ '{:.2f}'.format(event.rating) }}</div>
+            {% if event.rating %}
+                <div class="big-rating {% if event.rating >= 7 %}rating-green{% elif event.rating >= 4 %}rating-orange{% else %}rating-red{% endif %}">Rating: {{ '{:.2f}'.format(event.rating) }}</div>
+            {% endif %}
             <p>Event ID: {{ event.event_id }}</p>
             <p>Date: {{ event.date }}</p>
             <p>Stadium: {{ event.stadium_name }}</p>

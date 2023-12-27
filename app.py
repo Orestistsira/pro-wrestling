@@ -61,7 +61,28 @@ def matches():
     cursor.close()
 
     # Render the HTML template with the list of matches
-    return render_template('matches.html', title='Wrestling Matches', data=matches)
+    return render_template('matches.html', title='Wrestling Matches', matches=matches)
+
+
+@app.route('/wrestlers')
+def wrestlers():
+    cursor = conn.cursor(dictionary=True)
+
+    # Fetch wrestling matches from the database
+    query = """
+        SELECT w.wrestler_id, w.wrestler_name, avg(urw.rating) as rating
+        from wrestler w
+        left join user_reviews_wrestler urw on w.wrestler_id = urw.wrestler_id
+        GROUP BY w.wrestler_id
+        ORDER BY rating DESC;
+    """
+    cursor.execute(query)
+    wrestlers = cursor.fetchall()
+
+    cursor.close()
+
+    # Render the HTML template with the list of matches
+    return render_template('wrestlers.html', title='Wrestlers', wrestlers=wrestlers)
 
 
 @app.route('/match/<int:event_id>/<int:match_id>')
@@ -123,13 +144,42 @@ def event_detail(event_id):
     return render_template('event_detail.html', title='Event Details', event=event, matches=matches)
 
 
+@app.route('/wrestler/<int:wrestler_id>')
+def wrestler_detail(wrestler_id):
+    cursor = conn.cursor(dictionary=True)
+
+    # Fetch wrestler details based on wrestler_id
+    wrestler_query = """
+        SELECT w.wrestler_id, w.wrestler_name, avg(urw.rating) as rating, w.date_of_birth, w.date_of_death
+        , w.weight_class, w.gender
+        from wrestler w
+        left join user_reviews_wrestler urw on w.wrestler_id = urw.wrestler_id
+        where w.wrestler_id = %s
+    """
+    cursor.execute(wrestler_query, (wrestler_id,))
+    wrestler = cursor.fetchone()
+
+    # Fetch reviews for the match
+    review_query = """
+            SELECT * 
+            FROM user_reviews_wrestler urw
+            join `user` on `user`.user_id = urw.user_id 
+            where urw.wrestler_id = %s """
+    cursor.execute(review_query, (wrestler_id,))
+    reviews = cursor.fetchall()
+
+    cursor.close()
+
+    # Render the HTML template with match details
+    return render_template('wrestler_detail.html', title='Wrestler Details', wrestler=wrestler, reviews=reviews)
+
+
 @app.route('/submit_match_review/<int:event_id>/<int:match_id>', methods=['POST'])
 def submit_match_review(event_id, match_id):
     cursor = conn.cursor()
 
     # Get review details from the form
     review_id = random.randint(1, 9999)  # Should change tables' primary keys to AUTO_INCREMENT
-    print(review_id)
     user_id = 123
     current_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     rating = request.form.get('rating')
@@ -145,6 +195,29 @@ def submit_match_review(event_id, match_id):
 
     # Redirect back to the event detail page
     return redirect(url_for('match_detail', event_id=event_id, match_id=match_id))
+
+
+@app.route('/submit_wrestler_review/<int:wrestler_id>', methods=['POST'])
+def submit_wrestler_review(wrestler_id):
+    cursor = conn.cursor()
+
+    # Get review details from the form
+    review_id = random.randint(1, 9999)  # Should change tables' primary keys to AUTO_INCREMENT
+    user_id = 123
+    current_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    rating = request.form.get('rating')
+    text = request.form.get('text')
+
+    # Insert the review into the database
+    review_query = "INSERT INTO user_reviews_wrestler (review_id, wrestler_id, user_id, rating, text, " \
+                   "date) VALUES (%s, %s, %s, %s, %s, %s) "
+    cursor.execute(review_query, (review_id, wrestler_id, user_id, rating, text, current_date))
+    conn.commit()
+
+    cursor.close()
+
+    # Redirect back to the event detail page
+    return redirect(url_for('wrestler_detail', wrestler_id=wrestler_id))
 
 
 if __name__ == '__main__':
