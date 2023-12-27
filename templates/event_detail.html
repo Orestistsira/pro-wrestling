@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <nav>
+                <ul>
+                    <li><a href="{{ url_for('index') }}">Events</a></li>
+                    <li><a href="{{ url_for('matches') }}">Matches</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <h1>{{ title }}</h1>
+        {% if event %}
+            <p>Event ID: {{ event.event_id }}</p>
+            <p>Date: {{ event.date }}</p>
+            <p>Stadium: {{ event.stadium_name }}</p>
+            <!-- Add more match details as needed -->
+        {% else %}
+            <p>No event details found.</p>
+        {% endif %}
+
+        <h2>Matches for {{ event.event_name }}</h2>
+        <ul>
+            {% for match in matches %}
+                <li>
+                    <a href="{{ url_for('match_detail', event_id=match.event_id, match_id=match.match_id) }}">{{ match.match_id }}.  {{ match.type }}</a>
+                    <!-- Add more match details as needed -->
+                </li>
+            {% endfor %}
+        </ul>
+
+        <!-- You can also provide a link to go back to the events list -->
+        <a class="back-link" href="{{ url_for('index') }}">Back to Events</a>
+    </div>
+</body>
+</html>

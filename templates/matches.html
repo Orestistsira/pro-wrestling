@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
+</head>
+<body>
+    <div class="container">
+        <header>
+            <nav>
+                <ul>
+                    <li><a href="{{ url_for('index') }}">Events</a></li>
+                    <li><a href="{{ url_for('matches') }}">Matches</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <h1>{{ title }}</h1>
+        <ul>
+            {% for match in data %}
+                <li>
+                    <a href="{{ url_for('match_detail', event_id=match.event_id, match_id=match.match_id) }}">{{ match.event_id }}.{{ match.match_id }}  {{ match.type }}</a>
+                    <!-- Add more match details as needed -->
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>

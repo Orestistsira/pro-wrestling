@@ -1,0 +1,130 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+header {
+    background-color: #333;
+    color: white;
+    padding: 10px;
+}
+
+nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+nav ul li {
+    display: inline;
+    margin-right: 10px;
+}
+
+h1 {
+    color: #333;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+li {
+    background-color: #fff;
+    padding: 10px;
+    margin-bottom: 5px;
+    border-radius: 5px;
+}
+
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.review-bar {
+    background-color: #f2f2f2;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+/* Style for the rating */
+.rating {
+    font-weight: bold;
+    color: #007bff; /* Change the color as needed */
+    margin-right: 10px;
+}
+
+/* Style for the username */
+.username {
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+/* Style for the review text */
+.review-text {
+    margin-bottom: 10px;
+}
+
+form {
+    max-width: 500px;
+    margin: 20px auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #fff;
+}
+
+/* Style for form labels */
+form label {
+    display: block;
+    margin-bottom: 8px;
+}
+
+/* Style for form inputs and textarea */
+form input,
+form textarea {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 15px;
+    box-sizing: border-box;
+}
+
+/* Style for the submit button */
+form button {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* Style for the link to go back to the events list */
+.back-link {
+    display: block;
+    margin-top: 20px;
+    color: #007bff;
+    text-decoration: none;
+}
+
+a {
+    color: inherit; /* Use the default color */
+}
+
+/* Style for visited links */
+a:visited {
+    color: inherit; /* Use the default color for visited links */
+}
+
+nav a {
+    text-decoration: none; /* Remove underline */
+    color: #000000; /* Set the desired link color */
+}
+
+/* Style for visited links in navigation */
+nav a:visited {
+    color: #000000; /* Use the same color for visited links */
+}

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <nav>
+                <ul>
+                    <li><a href="{{ url_for('index') }}">Events</a></li>
+                    <li><a href="{{ url_for('matches') }}">Matches</a></li>
+                </ul>
+            </nav>
+        </header>
+
+
+        <h1>{{ title }}</h1>
+        <ul>
+            {% for event in data %}
+                <li><a href="{{ url_for('event_detail', event_id=event.event_id) }}">{{ event.event_name }}     {{ event.date }}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>
