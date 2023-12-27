@@ -24,7 +24,14 @@ def index():
     cursor = conn.cursor(dictionary=True)
 
     # Fetch wrestling events from the database
-    query = "SELECT * FROM event"
+    query = """
+        SELECT event.event_id, event_name, rating
+        FROM (SELECT prowresdb.`review-event`.event_id, AVG(rating) AS rating
+        FROM prowresdb.`review-event`
+        GROUP BY prowresdb.`review-event`.event_id) AS avg
+        right JOIN prowresdb.event ON avg.event_id = prowresdb.event.event_id
+        ORDER BY rating DESC
+        """
     cursor.execute(query)
     events = cursor.fetchall()
 
@@ -39,7 +46,15 @@ def matches():
     cursor = conn.cursor(dictionary=True)
 
     # Fetch wrestling matches from the database
-    query = "SELECT * FROM `match`"
+    query = """
+        SELECT m.event_id, m.match_id, m.type, e.event_name, AVG(urm.rating) AS rating
+        FROM `match` m
+        JOIN event e ON m.event_id = e.event_id
+        LEFT JOIN user_reviews_match urm ON m.event_id = urm.event_id AND m.match_id = urm.match_id
+        GROUP BY m.event_id, m.match_id, e.event_name
+        ORDER BY rating DESC;
+
+    """
     cursor.execute(query)
     matches = cursor.fetchall()
 
@@ -55,7 +70,11 @@ def match_detail(event_id, match_id):
 
     # Fetch match details based on both event_id and match_id
     match_query = """
-        SELECT * from `match` where `match`.event_id = %s AND `match`.match_id = %s
+        SELECT m.event_id, m.match_id, m.type, e.event_name, AVG(urm.rating) AS rating
+        from `match` m
+        join event e ON m.event_id = e.event_id
+        LEFT JOIN user_reviews_match urm ON m.event_id = urm.event_id AND m.match_id = urm.match_id
+        where m.event_id = %s and m.match_id = %s
     """
     cursor.execute(match_query, (event_id, match_id))
     match = cursor.fetchone()
@@ -79,7 +98,16 @@ def event_detail(event_id):
     cursor = conn.cursor(dictionary=True)
 
     # Fetch event details based on event_id
-    query = "SELECT * FROM event join stadium on event.stadium_id = stadium.stadium_id WHERE event_id = %s"
+    query = """
+    select * 
+    from (
+    SELECT event.event_id, event_name, stadium_id, rating, date, attendance
+    FROM (SELECT prowresdb.`review-event`.event_id, AVG(rating) AS rating
+    FROM prowresdb.`review-event`
+    GROUP BY prowresdb.`review-event`.event_id) AS avg
+    right JOIN prowresdb.event ON avg.event_id = prowresdb.event.event_id) as ev_rating 
+    join stadium on ev_rating.stadium_id = stadium.stadium_id WHERE ev_rating.event_id = %s
+    """
     cursor.execute(query, (event_id,))
     event = cursor.fetchone()
 

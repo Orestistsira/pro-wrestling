@@ -102,15 +102,8 @@ form button {
     cursor: pointer;
 }
 
-/* Style for the link to go back to the events list */
-.back-link {
-    display: block;
-    margin-top: 20px;
-    color: #007bff;
-    text-decoration: none;
-}
-
 a {
+    text-decoration: none; /* Remove underline */
     color: inherit; /* Use the default color */
 }
 
@@ -128,3 +121,40 @@ nav a {
 nav a:visited {
     color: #000000; /* Use the same color for visited links */
 }
+
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.big-rating {
+    font-size: 24px;
+    font-weight: bold;
+    text-align: right;
+    margin-top: -40px; /* Adjust the margin as needed */
+}
+
+.rating {
+    display: inline-block;
+    margin-left: auto;
+    font-weight: bold;
+}
+
+/* Define color ranges based on rating values */
+.rating-green {
+    color: lightgreen;
+}
+
+.rating-yellow {
+    color: yellow;
+}
+
+.rating-orange {
+    color: orange;
+}
+
+.rating-red {
+    color: red;
+}
+

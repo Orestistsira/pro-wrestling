@@ -19,6 +19,7 @@
 
         <h1>{{ title }}</h1>
         {% if event %}
+            <div class="big-rating {% if event.rating >= 7 %}rating-green{% elif event.rating >= 4 %}rating-orange{% else %}rating-red{% endif %}">Rating: {{ '{:.2f}'.format(event.rating) }}</div>
             <p>Event ID: {{ event.event_id }}</p>
             <p>Date: {{ event.date }}</p>
             <p>Stadium: {{ event.stadium_name }}</p>
@@ -36,9 +37,6 @@
                 </li>
             {% endfor %}
         </ul>
-
-        <!-- You can also provide a link to go back to the events list -->
-        <a class="back-link" href="{{ url_for('index') }}">Back to Events</a>
     </div>
 </body>
 </html>

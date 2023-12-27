@@ -21,7 +21,19 @@
         <h1>{{ title }}</h1>
         <ul>
             {% for event in data %}
-                <li><a href="{{ url_for('event_detail', event_id=event.event_id) }}">{{ event.event_name }}     {{ event.date }}</a></li>
+                <li>
+                    <a href="{{ url_for('event_detail', event_id=event.event_id) }}">
+                        <div class="info-item">
+                            <span>{{ event.event_name }}</span>
+                            {% if event.rating %}
+                                <span class="rating {% if event.rating >= 7 %}rating-green{% elif event.rating >= 4 %}rating-orange{% else %}rating-red{% endif %}">
+                                    Rating: {{ '{:.2f}'.format(event.rating) }}
+                                </span>
+                            {% endif %}
+                        </div>
+
+                    </a>
+                </li>
             {% endfor %}
         </ul>
     </div>

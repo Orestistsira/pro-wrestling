@@ -20,8 +20,9 @@
         <h1>{{ title }}</h1>
 
         {% if match %}
+            <div class="big-rating {% if match.rating >= 7 %}rating-green{% elif match.rating >= 4 %}rating-orange{% else %}rating-red{% endif %}">Rating: {{ '{:.2f}'.format(match.rating) }}</div>
             <p>Match ID: {{ match.match_id }}</p>
-            <p>Event ID: {{ match.event_id }}</p>
+            <p><a href="{{ url_for('event_detail', event_id=match.event_id) }}">Event: {{ match.event_name }}</a></p>
             <p>Type: {{ match.type }}</p>
             <!-- Add more match details as needed -->
         {% else %}
@@ -34,7 +35,7 @@
                 <li>
                     <div class="review-bar">
                         <span class="rating">Rating: {{ review.rating }}</span>
-                        <span class="username">By {{ review.username }}</span>
+                        <span class="username">{{ review.username }}</span>
                     </div>
                     <div class="review-text">{{ review.text }}</div>
                 </li>
@@ -51,9 +52,6 @@
 
             <button type="submit">Submit Review</button>
         </form>
-
-        <!-- You can provide a link to go back to the matches list or events list -->
-        <a class="back-link" href="{{ url_for('matches') }}">Back to Matches</a>
     </div>
 </body>
 </html>

@@ -21,9 +21,18 @@
         <h1>{{ title }}</h1>
         <ul>
             {% for match in data %}
-                <li>
-                    <a href="{{ url_for('match_detail', event_id=match.event_id, match_id=match.match_id) }}">{{ match.event_id }}.{{ match.match_id }}  {{ match.type }}</a>
-                    <!-- Add more match details as needed -->
+                 <li>
+                    <a href="{{ url_for('match_detail', event_id=match.event_id, match_id=match.match_id) }}">
+                        <div class="info-item">
+                            <span>{{ match.event_name }}  {{ match.type }}</span>
+                            {% if match.rating %}
+                                <span class="rating {% if match.rating >= 7 %}rating-green{% elif match.rating >= 4 %}rating-orange{% else %}rating-red{% endif %}">
+                                    Rating: {{ '{:.2f}'.format(match.rating) }}
+                                </span>
+                            {% endif %}
+                        </div>
+
+                    </a>
                 </li>
             {% endfor %}
         </ul>
