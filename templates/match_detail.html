@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="{{ url_for('static', filename='prowrestling.png') }}" type="image/png">
     <title>{{ title }}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
@@ -11,7 +12,7 @@
         <header>
             <nav>
                 <ul>
-                    <li><a href="{{ url_for('index') }}">Events</a></li>
+                    <li><a href="{{ url_for('events') }}">Events</a></li>
                     <li><a href="{{ url_for('matches') }}">Matches</a></li>
                     <li><a href="{{ url_for('wrestlers') }}">Wrestlers</a></li>
                 </ul>
@@ -33,7 +34,23 @@
         {% endif %}
 
         <h2>Wrestlers</h2>
-        TODO
+        <ul>
+            {% for wrestler in wrestlers %}
+                 <li>
+                    <a href="{{ url_for('wrestler_detail', wrestler_id=wrestler.wrestler_id) }}">
+                        <div class="info-item">
+                            <span>{{ wrestler.wrestler_name }}</span>
+                            {% if wrestler.rating %}
+                                <span class="rating {% if wrestler.rating >= 7 %}rating-green{% elif wrestler.rating >= 4 %}rating-orange{% else %}rating-red{% endif %}">
+                                    Rating: {{ '{:.2f}'.format(wrestler.rating) }}
+                                </span>
+                            {% endif %}
+                        </div>
+
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
 
         <h2>Reviews</h2>
         <ul>

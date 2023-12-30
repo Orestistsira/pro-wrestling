@@ -20,7 +20,7 @@ conn = mysql.connector.connect(**db_config)
 
 
 @app.route('/')
-def index():
+def events():
     cursor = conn.cursor(dictionary=True)
 
     # Fetch wrestling events from the database
@@ -38,7 +38,7 @@ def index():
     cursor.close()
 
     # Render the HTML template with the list of events
-    return render_template('index.html', title='Wrestling Events', data=events)
+    return render_template('events.html', title='Wrestling Events', data=events)
 
 
 @app.route('/matches')
@@ -108,10 +108,33 @@ def match_detail(event_id, match_id):
     cursor.execute(review_query, (event_id, match_id))
     reviews = cursor.fetchall()
 
+    # Fetch wrestlers for the match
+    wrestlers_query = """
+                    SELECT
+                        w.wrestler_id,
+                        w.wrestler_name,
+                        m.match_id,
+                        m.event_id,
+                        AVG(wr.rating) AS rating
+                    FROM
+                        wrestler w
+                    JOIN
+                        match_has_wrestler mw ON w.wrestler_id = mw.wrestler_id
+                    JOIN
+                        `match` m ON mw.match_id = m.match_id and mw.event_id = m.event_id
+                    LEFT JOIN
+                        user_reviews_wrestler wr ON w.wrestler_id = wr.wrestler_id
+                    WHERE mw.event_id = %s and mw.match_id = %s
+                    GROUP BY
+                        w.wrestler_id;
+                    """
+    cursor.execute(wrestlers_query, (event_id, match_id))
+    wrestlers = cursor.fetchall()
+
     cursor.close()
 
     # Render the HTML template with match details
-    return render_template('match_detail.html', title='Match Details', match=match, reviews=reviews)
+    return render_template('match_detail.html', title='Match Details', match=match, reviews=reviews, wrestlers=wrestlers)
 
 
 @app.route('/event/<int:event_id>')
