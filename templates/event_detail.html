@@ -15,6 +15,7 @@
                     <li><a href="{{ url_for('events') }}">Events</a></li>
                     <li><a href="{{ url_for('matches') }}">Matches</a></li>
                     <li><a href="{{ url_for('wrestlers') }}">Wrestlers</a></li>
+                    <li><a href="{{ url_for('promotions') }}">Promotions</a></li>
                 </ul>
             </nav>
         </header>
@@ -31,6 +32,9 @@
         {% else %}
             <p>No event details found.</p>
         {% endif %}
+
+        <h2>Promotions</h2>
+        TODO
 
         <h2>Matches for {{ event.event_name }}</h2>
         <ul>

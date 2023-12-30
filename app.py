@@ -85,6 +85,27 @@ def wrestlers():
     return render_template('wrestlers.html', title='Wrestlers', wrestlers=wrestlers)
 
 
+@app.route('/promotions')
+def promotions():
+    cursor = conn.cursor(dictionary=True)
+
+    # Fetch wrestling matches from the database
+    query = """
+        SELECT p.promotion_id, p.promotion_name, avg(urp.rating) as rating
+        from promotion p
+        left join user_reviews_promotion urp on p.promotion_id = urp.promotion_id
+        GROUP BY p.promotion_id
+        ORDER BY rating DESC;
+    """
+    cursor.execute(query)
+    promotions = cursor.fetchall()
+
+    cursor.close()
+
+    # Render the HTML template with the list of matches
+    return render_template('promotions.html', title='Promotions', promotions=promotions)
+
+
 @app.route('/match/<int:event_id>/<int:match_id>')
 def match_detail(event_id, match_id):
     cursor = conn.cursor(dictionary=True)
@@ -197,6 +218,35 @@ def wrestler_detail(wrestler_id):
     return render_template('wrestler_detail.html', title='Wrestler Details', wrestler=wrestler, reviews=reviews)
 
 
+@app.route('/promotion/<int:promotion_id>')
+def promotion_detail(promotion_id):
+    cursor = conn.cursor(dictionary=True)
+
+    # Fetch wrestler details based on wrestler_id
+    promotion_query = """
+        SELECT p.promotion_id, p.promotion_name, avg(urp.rating) as rating, p.date_found, p.owner, p.location
+        from promotion p
+        left join user_reviews_promotion urp on p.promotion_id = urp.promotion_id
+        where p.promotion_id = %s
+    """
+    cursor.execute(promotion_query, (promotion_id,))
+    promotion = cursor.fetchone()
+
+    # Fetch reviews for the match
+    review_query = """
+            SELECT * 
+            FROM user_reviews_promotion urp
+            join `user` on `user`.user_id = urp.user_id 
+            where urp.promotion_id = %s """
+    cursor.execute(review_query, (promotion_id,))
+    reviews = cursor.fetchall()
+
+    cursor.close()
+
+    # Render the HTML template with match details
+    return render_template('promotion_detail.html', title='Promotion Details', promotion=promotion, reviews=reviews)
+
+
 @app.route('/submit_match_review/<int:event_id>/<int:match_id>', methods=['POST'])
 def submit_match_review(event_id, match_id):
     cursor = conn.cursor()
@@ -241,6 +291,29 @@ def submit_wrestler_review(wrestler_id):
 
     # Redirect back to the event detail page
     return redirect(url_for('wrestler_detail', wrestler_id=wrestler_id))
+
+
+@app.route('/submit_promotion_review/<int:promotion_id>', methods=['POST'])
+def submit_promotion_review(promotion_id):
+    cursor = conn.cursor()
+
+    # Get review details from the form
+    review_id = random.randint(1, 9999)  # Should change tables' primary keys to AUTO_INCREMENT
+    user_id = 123
+    current_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    rating = request.form.get('rating')
+    text = request.form.get('text')
+
+    # Insert the review into the database
+    review_query = "INSERT INTO user_reviews_promotion (review_id, promotion_id, user_id, rating, text, " \
+                   "date) VALUES (%s, %s, %s, %s, %s, %s) "
+    cursor.execute(review_query, (review_id, promotion_id, user_id, rating, text, current_date))
+    conn.commit()
+
+    cursor.close()
+
+    # Redirect back to the event detail page
+    return redirect(url_for('promotion_detail', promotion_id=promotion_id))
 
 
 if __name__ == '__main__':

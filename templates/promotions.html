@@ -6,6 +6,7 @@
     <link rel="icon" href="{{ url_for('static', filename='prowrestling.png') }}" type="image/png">
     <title>{{ title }}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
 </head>
 <body>
     <div class="container">
@@ -20,17 +21,16 @@
             </nav>
         </header>
 
-
         <h1>{{ title }}</h1>
         <ul>
-            {% for event in data %}
-                <li>
-                    <a href="{{ url_for('event_detail', event_id=event.event_id) }}">
+            {% for promotion in promotions %}
+                 <li>
+                    <a href="{{ url_for('promotion_detail', promotion_id=promotion.promotion_id) }}">
                         <div class="info-item">
-                            <span>{{ event.event_name }}</span>
-                            {% if event.rating %}
-                                <span class="rating {% if event.rating >= 7 %}rating-green{% elif event.rating >= 4 %}rating-orange{% else %}rating-red{% endif %}">
-                                    Rating: {{ '{:.2f}'.format(event.rating) }}
+                            <span>{{ promotion.promotion_name }}</span>
+                            {% if promotion.rating %}
+                                <span class="rating {% if promotion.rating >= 7 %}rating-green{% elif promotion.rating >= 4 %}rating-orange{% else %}rating-red{% endif %}">
+                                    Rating: {{ '{:.2f}'.format(promotion.rating) }}
                                 </span>
                             {% endif %}
                         </div>
