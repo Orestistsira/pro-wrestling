@@ -106,20 +106,41 @@ def promotions():
     return render_template('promotions.html', title='Promotions', promotions=promotions)
 
 
+@app.route('/titles')
+def titles():
+    cursor = conn.cursor(dictionary=True)
+
+    # Fetch wrestling titles from the database
+    query = """
+        SELECT t.title_id, t.title_name
+        from title t
+    """
+    cursor.execute(query)
+    titles = cursor.fetchall()
+
+    cursor.close()
+
+    # Render the HTML template with the list of titles
+    return render_template('titles.html', title='Titles', titles=titles)
+
+
 @app.route('/match/<int:event_id>/<int:match_id>')
 def match_detail(event_id, match_id):
     cursor = conn.cursor(dictionary=True)
 
     # Fetch match details based on both event_id and match_id
     match_query = """
-        SELECT m.event_id, m.match_id, m.type, e.event_name, AVG(urm.rating) AS rating
+        SELECT m.event_id, m.match_id, m.type, m.title_id, t.title_name, e.event_name, AVG(urm.rating) AS rating
         from `match` m
         join event e ON m.event_id = e.event_id
         LEFT JOIN user_reviews_match urm ON m.event_id = urm.event_id AND m.match_id = urm.match_id
+        left join title t on t.title_id = m.title_id
         where m.event_id = %s and m.match_id = %s
     """
     cursor.execute(match_query, (event_id, match_id))
     match = cursor.fetchone()
+
+    print(match)
 
     # Fetch reviews for the match
     review_query = """SELECT * 
@@ -222,7 +243,7 @@ def wrestler_detail(wrestler_id):
     cursor.execute(wrestler_query, (wrestler_id,))
     wrestler = cursor.fetchone()
 
-    # Fetch reviews for the match
+    # Fetch reviews for the wrestler
     review_query = """
             SELECT * 
             FROM user_reviews_wrestler urw
@@ -233,7 +254,7 @@ def wrestler_detail(wrestler_id):
 
     cursor.close()
 
-    # Render the HTML template with match details
+    # Render the HTML template with wrestler details
     return render_template('wrestler_detail.html', title='Wrestler Details', wrestler=wrestler, reviews=reviews)
 
 
@@ -241,7 +262,7 @@ def wrestler_detail(wrestler_id):
 def promotion_detail(promotion_id):
     cursor = conn.cursor(dictionary=True)
 
-    # Fetch wrestler details based on wrestler_id
+    # Fetch promotion details based on promotion_id
     promotion_query = """
         SELECT p.promotion_id, p.promotion_name, avg(urp.rating) as rating, p.date_found, p.owner, p.location
         from promotion p
@@ -262,8 +283,27 @@ def promotion_detail(promotion_id):
 
     cursor.close()
 
-    # Render the HTML template with match details
+    # Render the HTML template with promotion details
     return render_template('promotion_detail.html', title='Promotion Details', promotion=promotion, reviews=reviews)
+
+
+@app.route('/title/<int:title_id>')
+def title_detail(title_id):
+    cursor = conn.cursor(dictionary=True)
+
+    # Fetch title details based on title_id
+    title_query = """
+        SELECT *
+        from title t
+        where t.title_id = %s
+    """
+    cursor.execute(title_query, (title_id,))
+    t = cursor.fetchone()
+
+    cursor.close()
+
+    # Render the HTML template with title details
+    return render_template('title_detail.html', title='Title Details', t=t)
 
 
 @app.route('/submit_match_review/<int:event_id>/<int:match_id>', methods=['POST'])
