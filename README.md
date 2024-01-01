@@ -2,5 +2,5 @@
 
 ```
 pip install Flask mysql-connector-python
-python app.py
+python3 app.py
 ```
