@@ -1,1 +1,1 @@
-*** Pro Wrestling DB ***
+# Pro Wrestling DB
