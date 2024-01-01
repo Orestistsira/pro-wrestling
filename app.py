@@ -182,10 +182,29 @@ def event_detail(event_id):
     cursor.execute(match_query, (event_id,))
     matches = cursor.fetchall()
 
+    # Fetch matches for the event
+    promotions_query = """
+        SELECT
+            p.promotion_id,
+            p.promotion_name,
+            AVG(urp.rating) AS rating
+        FROM
+            promotion p
+        JOIN
+            promotion_has_event phe ON p.promotion_id = phe.promotion_id
+        LEFT JOIN
+            user_reviews_promotion urp ON p.promotion_id = urp.promotion_id
+        WHERE phe.event_id = %s
+        GROUP BY
+            p.promotion_id;
+    """
+    cursor.execute(promotions_query, (event_id,))
+    promotions = cursor.fetchall()
+
     cursor.close()
 
     # Render the HTML template with event details and matches
-    return render_template('event_detail.html', title='Event Details', event=event, matches=matches)
+    return render_template('event_detail.html', title='Event Details', event=event, matches=matches, promotions=promotions)
 
 
 @app.route('/wrestler/<int:wrestler_id>')

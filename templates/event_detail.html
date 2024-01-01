@@ -34,7 +34,23 @@
         {% endif %}
 
         <h2>Promotions</h2>
-        TODO
+        <ul>
+            {% for promotion in promotions %}
+                 <li>
+                    <a href="{{ url_for('promotion_detail', promotion_id=promotion.promotion_id) }}">
+                        <div class="info-item">
+                            <span>{{ promotion.promotion_name }}</span>
+                            {% if promotion.rating %}
+                                <span class="rating {% if promotion.rating >= 7 %}rating-green{% elif promotion.rating >= 4 %}rating-orange{% else %}rating-red{% endif %}">
+                                    Rating: {{ '{:.2f}'.format(promotion.rating) }}
+                                </span>
+                            {% endif %}
+                        </div>
+
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
 
         <h2>Matches for {{ event.event_name }}</h2>
         <ul>
