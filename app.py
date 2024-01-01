@@ -299,10 +299,27 @@ def title_detail(title_id):
     cursor.execute(title_query, (title_id,))
     t = cursor.fetchone()
 
+    title_holder_query = """
+            SELECT th.wrestler_id, th.match_id, th.event_id, th.event_name, th.date, w.wrestler_name, m.type
+            FROM (SELECT *,
+                ROW_NUMBER() OVER (PARTITION BY prowresdb.`title-wrestler`.title_id ORDER BY prowresdb.`title-wrestler`.date DESC) AS rn
+              FROM
+                prowresdb.`title-wrestler`
+              WHERE winner = true and title_id = %s
+            ) AS th
+            join wrestler w on w.wrestler_id = th.wrestler_id
+            join `match` m on m.match_id = th.match_id and m.event_id = th.event_id
+            WHERE rn=1
+        """
+    cursor.execute(title_holder_query, (title_id,))
+    title_holder = cursor.fetchone()
+
+    print(title_holder)
+
     cursor.close()
 
     # Render the HTML template with title details
-    return render_template('title_detail.html', title='Title Details', t=t)
+    return render_template('title_detail.html', title='Title Details', t=t, title_holder=title_holder)
 
 
 @app.route('/submit_match_review/<int:event_id>/<int:match_id>', methods=['POST'])

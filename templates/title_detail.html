@@ -31,8 +31,16 @@
             <p>No title details found.</p>
         {% endif %}
 
-        <h2>Title Holder</h2>
-        TODO
+        {% if title_holder %}
+            <h2>Title Holder</h2>
+            <a href="{{ url_for('wrestler_detail', wrestler_id=title_holder.wrestler_id) }}">
+                <p>Wrestler: {{ title_holder.wrestler_name }}</p>
+            </a>
+            <a href="{{ url_for('match_detail', event_id=title_holder.event_id, match_id=title_holder.match_id) }}">
+                <p>Match: {{ title_holder.event_name }}:  {{ title_holder.type }}</p>
+            </a>
+            <p>Date: {{ title_holder.date }}</p>
+        {% endif %}
     </div>
 </body>
 </html>
