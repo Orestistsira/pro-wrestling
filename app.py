@@ -140,8 +140,6 @@ def match_detail(event_id, match_id):
     cursor.execute(match_query, (event_id, match_id))
     match = cursor.fetchone()
 
-    print(match)
-
     # Fetch reviews for the match
     review_query = """SELECT * 
                     FROM user_reviews_match
@@ -157,6 +155,7 @@ def match_detail(event_id, match_id):
                         w.wrestler_name,
                         m.match_id,
                         m.event_id,
+                        mw.winner,
                         AVG(wr.rating) AS rating
                     FROM
                         wrestler w
