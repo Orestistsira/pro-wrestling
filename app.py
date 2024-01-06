@@ -29,7 +29,7 @@ def events():
         FROM (SELECT prowresdb.`review-event`.event_id, AVG(rating) AS rating
         FROM prowresdb.`review-event`
         GROUP BY prowresdb.`review-event`.event_id) AS avg
-        right JOIN prowresdb.event ON avg.event_id = prowresdb.event.event_id
+        RIGHT JOIN prowresdb.event ON avg.event_id = prowresdb.event.event_id
         ORDER BY rating DESC
         """
     cursor.execute(query)
@@ -71,8 +71,8 @@ def wrestlers():
     # Fetch wrestling matches from the database
     query = """
         SELECT w.wrestler_id, w.wrestler_name, avg(urw.rating) as rating
-        from wrestler w
-        left join user_reviews_wrestler urw on w.wrestler_id = urw.wrestler_id
+        FROM wrestler w
+        LEFT JOIN user_reviews_wrestler urw ON w.wrestler_id = urw.wrestler_id
         GROUP BY w.wrestler_id
         ORDER BY rating DESC;
     """
@@ -92,8 +92,8 @@ def promotions():
     # Fetch wrestling matches from the database
     query = """
         SELECT p.promotion_id, p.promotion_name, avg(urp.rating) as rating
-        from promotion p
-        left join user_reviews_promotion urp on p.promotion_id = urp.promotion_id
+        FROM promotion p
+        LEFT JOIN user_reviews_promotion urp ON p.promotion_id = urp.promotion_id
         GROUP BY p.promotion_id
         ORDER BY rating DESC;
     """
@@ -113,7 +113,7 @@ def titles():
     # Fetch wrestling titles from the database
     query = """
         SELECT t.title_id, t.title_name
-        from title t
+        FROM title t
     """
     cursor.execute(query)
     titles = cursor.fetchall()
@@ -131,11 +131,11 @@ def match_detail(event_id, match_id):
     # Fetch match details based on both event_id and match_id
     match_query = """
         SELECT m.event_id, m.match_id, m.type, m.title_id, t.title_name, e.event_name, AVG(urm.rating) AS rating
-        from `match` m
-        join event e ON m.event_id = e.event_id
+        FROM `match` m
+        JOIN event e ON m.event_id = e.event_id
         LEFT JOIN user_reviews_match urm ON m.event_id = urm.event_id AND m.match_id = urm.match_id
-        left join title t on t.title_id = m.title_id
-        where m.event_id = %s and m.match_id = %s
+        LEFT JOIN title t on t.title_id = m.title_id
+        WHERE m.event_id = %s AND m.match_id = %s
     """
     cursor.execute(match_query, (event_id, match_id))
     match = cursor.fetchone()
@@ -143,8 +143,8 @@ def match_detail(event_id, match_id):
     # Fetch reviews for the match
     review_query = """SELECT * 
                     FROM user_reviews_match
-                    join `user` on `user`.user_id = user_reviews_match.user_id 
-                    where event_id = %s and match_id = %s """
+                    JOIN `user` ON `user`.user_id = user_reviews_match.user_id 
+                    WHERE event_id = %s AND match_id = %s """
     cursor.execute(review_query, (event_id, match_id))
     reviews = cursor.fetchall()
 
@@ -184,20 +184,20 @@ def event_detail(event_id):
 
     # Fetch event details based on event_id
     query = """
-    select * 
-    from (
+    SELECT * 
+    FROM (
     SELECT event.event_id, event_name, stadium_id, rating, date, attendance
     FROM (SELECT prowresdb.`review-event`.event_id, AVG(rating) AS rating
     FROM prowresdb.`review-event`
     GROUP BY prowresdb.`review-event`.event_id) AS avg
-    right JOIN prowresdb.event ON avg.event_id = prowresdb.event.event_id) as ev_rating 
-    join stadium on ev_rating.stadium_id = stadium.stadium_id WHERE ev_rating.event_id = %s
+    RIGHT JOIN prowresdb.event ON avg.event_id = prowresdb.event.event_id) as ev_rating 
+    JOIN stadium ON ev_rating.stadium_id = stadium.stadium_id WHERE ev_rating.event_id = %s
     """
     cursor.execute(query, (event_id,))
     event = cursor.fetchone()
 
     # Fetch matches for the event
-    match_query = "select * from `match-event` join `match` on `match-event`.event_id = `match`.event_id and " \
+    match_query = "SELECT * FROM `match-event` JOIN `match` ON `match-event`.event_id = `match`.event_id AND " \
                   "`match-event`.match_id = `match`.match_id WHERE `match-event`.event_id = %s "
     cursor.execute(match_query, (event_id,))
     matches = cursor.fetchall()
@@ -235,9 +235,9 @@ def wrestler_detail(wrestler_id):
     wrestler_query = """
         SELECT w.wrestler_id, w.wrestler_name, avg(urw.rating) as rating, w.date_of_birth, w.date_of_death
         , w.weight_class, w.gender
-        from wrestler w
-        left join user_reviews_wrestler urw on w.wrestler_id = urw.wrestler_id
-        where w.wrestler_id = %s
+        FROM wrestler w
+        LEFT JOIN user_reviews_wrestler urw ON w.wrestler_id = urw.wrestler_id
+        WHERE w.wrestler_id = %s
     """
     cursor.execute(wrestler_query, (wrestler_id,))
     wrestler = cursor.fetchone()
@@ -246,8 +246,8 @@ def wrestler_detail(wrestler_id):
     review_query = """
             SELECT * 
             FROM user_reviews_wrestler urw
-            join `user` on `user`.user_id = urw.user_id 
-            where urw.wrestler_id = %s """
+            JOIN `user` ON `user`.user_id = urw.user_id 
+            WHERE urw.wrestler_id = %s """
     cursor.execute(review_query, (wrestler_id,))
     reviews = cursor.fetchall()
 
@@ -264,9 +264,9 @@ def promotion_detail(promotion_id):
     # Fetch promotion details based on promotion_id
     promotion_query = """
         SELECT p.promotion_id, p.promotion_name, avg(urp.rating) as rating, p.date_found, p.owner, p.location
-        from promotion p
-        left join user_reviews_promotion urp on p.promotion_id = urp.promotion_id
-        where p.promotion_id = %s
+        FROM promotion p
+        LEFT JOIN user_reviews_promotion urp ON p.promotion_id = urp.promotion_id
+        WHERE p.promotion_id = %s
     """
     cursor.execute(promotion_query, (promotion_id,))
     promotion = cursor.fetchone()
@@ -275,8 +275,8 @@ def promotion_detail(promotion_id):
     review_query = """
             SELECT * 
             FROM user_reviews_promotion urp
-            join `user` on `user`.user_id = urp.user_id 
-            where urp.promotion_id = %s """
+            JOIN `user` ON `user`.user_id = urp.user_id 
+            WHERE urp.promotion_id = %s """
     cursor.execute(review_query, (promotion_id,))
     reviews = cursor.fetchall()
 
@@ -293,8 +293,8 @@ def title_detail(title_id):
     # Fetch title details based on title_id
     title_query = """
         SELECT *
-        from title t
-        where t.title_id = %s
+        FROM title t
+        WHERE t.title_id = %s
     """
     cursor.execute(title_query, (title_id,))
     t = cursor.fetchone()
@@ -307,14 +307,12 @@ def title_detail(title_id):
                 prowresdb.`title-wrestler`
               WHERE winner = true and title_id = %s
             ) AS th
-            join wrestler w on w.wrestler_id = th.wrestler_id
-            join `match` m on m.match_id = th.match_id and m.event_id = th.event_id
+            JOIN wrestler w ON w.wrestler_id = th.wrestler_id
+            JOIN `match` m ON m.match_id = th.match_id and m.event_id = th.event_id
             WHERE rn=1
         """
     cursor.execute(title_holder_query, (title_id,))
     title_holder = cursor.fetchone()
-
-    print(title_holder)
 
     cursor.close()
 
